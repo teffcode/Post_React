@@ -1,7 +1,9 @@
 import React from 'react';
-import { Form, Icon, Input, Checkbox, Button } from 'antd';
 
 import axios from 'axios';
+import { Form, Icon, Input, Checkbox, Button } from 'antd';
+import { Redirect } from 'react-router';
+
 import './NormalLoginForm.css';
 import 'antd/dist/antd.css';
 
@@ -32,8 +34,8 @@ class NormalLoginForm extends React.Component {
   }
   
   handleSubmit = (event) => {
-    const appname = ""// your authentication username (backend)
-    const apppasswd = ""// your authentication pass (backend)
+    const appname = "itself"
+    const apppasswd = "hTE2Ugzf52jZZHo4XGtCeRMV%2BwybnqYX"
 
     event.preventDefault();
 
@@ -45,10 +47,10 @@ class NormalLoginForm extends React.Component {
   
     axios({ // validación que devuelve roles de usuario
       method: 'post',
-      url: '', // your API
+      url: 'http://192.168.27.17:9734/sgapi/restservices/auth/user',
       data: {
-        username: this.state.username, // auth
-        password: this.state.password // auth
+        username: this.state.username, // admin
+        password: this.state.password // qazwsx1234
       },
       auth: {
         username: appname,

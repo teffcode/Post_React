@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+
+import { Label, Segment } from 'semantic-ui-react';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+
 import Form from './components/NormalLoginForm';
-import { Grid, Label, Segment } from 'semantic-ui-react';
+import HomePage from './features/HomePage';
 
 class App extends Component {
 
@@ -9,6 +12,12 @@ class App extends Component {
 
     return(
       <div>
+
+        <Router>
+          <main>
+            <Route path="/home" component={HomePage} />
+          </main>
+        </Router>
 
         <div className="form">
           <Segment raised className="segmentContainer">
@@ -26,6 +35,8 @@ class App extends Component {
               <Form/>
           </Segment>
         </div>
+
+
       </div>
     );
   }
