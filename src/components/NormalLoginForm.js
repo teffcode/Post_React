@@ -1,13 +1,45 @@
 import React from 'react';
 
 import axios from 'axios';
-import { Form, Icon, Input, Checkbox, Button } from 'antd';
-import { Redirect } from 'react-router';
+import { Form, Icon, Input, Checkbox, Button, message } from 'antd';
+import { Route, Redirect, withRouter } from 'react-router-dom';
 
 import './NormalLoginForm.css';
 import 'antd/dist/antd.css';
 
 const FormItem = Form.Item;
+
+const auth = {
+  authenticate (username, password) {
+
+    const appname = "itself"
+    const apppasswd = "hTE2Ugzf52jZZHo4XGtCeRMV%2BwybnqYX"
+
+    return new Promise((resolve, reject) => {
+      axios({ // validación que devuelve roles de usuario
+        method: 'post',
+        url: '', // poner url del server 
+        data: {
+          username: username, // 
+          password: password // 
+        },
+        auth: {
+          username: appname,
+          password: apppasswd
+        }
+      })
+      .then(response => {
+        // validacion de la respuesta
+        resolve(true)
+        // si la respuesta es mala
+        reject(new Error('Error en autenticacion'))
+      }).catch(reject => {
+        console.log(reject.response)
+        message.error(reject.response.data)
+      })
+    })
+  },
+}
 
 class NormalLoginForm extends React.Component {
 
@@ -17,7 +49,8 @@ class NormalLoginForm extends React.Component {
     this.state = {
       username: '',
       password: '',
-      error: ''
+      error: '',
+      redirectToReferrer: false
     };
   }
 
@@ -34,45 +67,32 @@ class NormalLoginForm extends React.Component {
   }
   
   handleSubmit = (event) => {
-    const appname = "itself"
-    const apppasswd = "hTE2Ugzf52jZZHo4XGtCeRMV%2BwybnqYX"
-
     event.preventDefault();
 
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
       }
+      auth.authenticate(this.state.username, this.state.password)
+      .then(response => {
+        this.setState({
+          redirectToReferrer: true
+        })
+      })
     });
-  
-    axios({ // validación que devuelve roles de usuario
-      method: 'post',
-      url: 'http://192.168.27.17:9734/sgapi/restservices/auth/user',
-      data: {
-        username: this.state.username, // admin
-        password: this.state.password // qazwsx1234
-      },
-      auth: {
-        username: appname,
-        password: apppasswd
-      }
-    })
-    .then(response => {
-      console.log(response)
-      response.status === 200 ? 
-        console.log("puede pasar")
-      :
-        console.log("x")
-    })
-    .catch(err => {
-      console.log(err.response)
-      console.log(err.response.data)
-    });
-  }
+  } 
 
   render() {
 
     const { getFieldDecorator } = this.props.form;
+    const { from } = this.props.location && this.props.location.state || { from: { pathname: '/home' } }
+    const { redirectToReferrer } = this.state
+
+    if (redirectToReferrer) {
+      return (
+        <Redirect to={from}/>
+      )
+    }
 
     return (
 
@@ -109,9 +129,13 @@ class NormalLoginForm extends React.Component {
         </FormItem>
 
         <FormItem>
-          <Button type="primary" htmlType="submit" className="login-form-button">
-            Log in
-          </Button>
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              className="login-form-button"
+            >
+              Log in
+            </Button>
         </FormItem>
 
       </Form>
